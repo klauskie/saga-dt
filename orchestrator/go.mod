@@ -1,4 +1,4 @@
-module github.com/klauskie/orchestrator
+module github.com/klauskie/saga-dt/orchestrator
 
 go 1.21.5
 

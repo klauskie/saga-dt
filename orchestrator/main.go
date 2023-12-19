@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/klauskie/payments/proto"
+	"github.com/klauskie/saga-dt/payments/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"

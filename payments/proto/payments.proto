@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "github.com/klauskie/payments/proto";
+option go_package = "github.com/klauskie/saga-dt/payments/proto";
 
 message PaymentRequest {
   int64 userId = 1;

@@ -1,4 +1,4 @@
-module github.com/klauskie/payments
+module github.com/klauskie/saga-dt/payments
 
 go 1.21.5
 

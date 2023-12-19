@@ -2,8 +2,8 @@ package grpc
 
 import (
 	"context"
+	"github.com/klauskie/saga-dt/payments/proto"
 	"google.golang.org/grpc"
-	"payments/proto"
 )
 
 type PaymentsServer struct {

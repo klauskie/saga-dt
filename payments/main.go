@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
+	pmtHandler "github.com/klauskie/saga-dt/payments/server/grpc"
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	pmtHandler "payments/server/grpc"
 )
 
 func main() {
