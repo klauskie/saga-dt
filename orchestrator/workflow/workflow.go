@@ -18,7 +18,7 @@ func Handle(r models.Order) {
 
 func processSteps(stepList []steps.Step) error {
 	for _, step := range stepList {
-		ok := step.Process() // TODO add a retry
+		ok := step.Process()
 		if !ok {
 			return fmt.Errorf("step %s failed", step.Name())
 		}
@@ -32,10 +32,10 @@ func revertSteps(stepList []steps.Step) {
 		if step.Status() == steps.Complete {
 			continue
 		}
-		step.Revert() // TODO add a retry
+		step.Revert()
 	}
 }
 
 func workflowSteps(r models.Order) []steps.Step {
-	return []steps.Step{payments.NewGrpcStep(r)}
+	return []steps.Step{payments.NewStep(r)}
 }

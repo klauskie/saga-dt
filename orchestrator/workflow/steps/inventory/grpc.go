@@ -5,7 +5,7 @@ import "github.com/klauskie/saga-dt/orchestrator/workflow/steps"
 type inventoryGrpcStep struct{}
 
 func (s inventoryGrpcStep) Process() bool { return false }
-func (s inventoryGrpcStep) Revert()       {}
+func (s inventoryGrpcStep) Revert() bool  { return false }
 func (s inventoryGrpcStep) Status() steps.Status {
 	return steps.Complete
 }

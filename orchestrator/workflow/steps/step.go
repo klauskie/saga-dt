@@ -3,7 +3,7 @@ package steps
 type Step interface {
 	Name() string
 	Process() bool
-	Revert()
+	Revert() bool
 	Status() Status
 }
 
