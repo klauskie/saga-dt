@@ -2,6 +2,8 @@ module github.com/klauskie/saga-dt/orchestrator
 
 go 1.21.5
 
+replace github.com/klauskie/saga-dt/payments => ../payments
+
 require google.golang.org/grpc v1.60.1
 
 require (

@@ -1,21 +1,18 @@
 package main
 
 import (
-	"github.com/klauskie/saga-dt/payments/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"log"
+	"fmt"
+	"github.com/klauskie/saga-dt/orchestrator/models"
+	"github.com/klauskie/saga-dt/orchestrator/workflow"
 )
 
 func main() {
-	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
-	conn, err := grpc.Dial(":8089", opts...)
-	if err != nil {
-		log.Fatalf("failed to dial: %v", err)
-	}
-	defer conn.Close()
+	fmt.Println("Orchestrator is up...")
 
-	client := proto.NewPaymentsClient(conn)
+	workflow.Handle(models.Order{
+		Id:        "",
+		UserId:    0,
+		ProductId: 0,
+		Amount:    0,
+	})
 }
