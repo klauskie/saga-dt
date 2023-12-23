@@ -16,6 +16,7 @@ func NewServer(grpcServer *grpc.Server) {
 }
 
 func (s PaymentsServer) Debit(_ context.Context, req *proto.PaymentRequest) (*proto.PaymentResponse, error) {
+	// TODO add random factor
 	return &proto.PaymentResponse{
 		UserId:  req.UserId,
 		OrderId: req.OrderId,
@@ -25,6 +26,7 @@ func (s PaymentsServer) Debit(_ context.Context, req *proto.PaymentRequest) (*pr
 }
 
 func (s PaymentsServer) Credit(_ context.Context, req *proto.PaymentRequest) (*proto.PaymentResponse, error) {
+	// TODO add random factor
 	return &proto.PaymentResponse{
 		UserId:  req.UserId,
 		OrderId: req.OrderId,

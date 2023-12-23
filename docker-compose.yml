@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+  api-orders:
+    container_name: api-orders
+    build:
+      context: .
+      dockerfile: orders/Dockerfile
+    ports:
+      - "8089:8089"
+
   orchestrator:
     container_name: saga-orchestrator
     build:
