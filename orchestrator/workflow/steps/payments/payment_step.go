@@ -1,6 +1,7 @@
 package payments
 
 import (
+	"fmt"
 	"github.com/klauskie/saga-dt/orchestrator/models"
 	"github.com/klauskie/saga-dt/orchestrator/workflow/steps"
 	"github.com/klauskie/saga-dt/orchestrator/workflow/steps/payments/requesters"
@@ -12,27 +13,25 @@ type step struct {
 	stepStatus steps.Status
 }
 
-func NewStep(r models.Order) steps.Step {
+func NewStep(task models.Task) steps.Step {
 	return &step{
 		payment: Payment{
-			UserId:   r.UserId,
-			OrderId:  r.Id,
-			Amount:   r.Amount,
+			UserId:   task.UserId,
+			OrderId:  task.OrderId,
+			Amount:   task.Amount,
 			Currency: "USD",
 			Status:   None,
 		},
-		requester: requesters.RetryRequester{
-			DefaultRequester: requesters.NewPaymentsGrpcRequester(),
-			MaxRetries:       3,
-			Delay:            0,
-		},
+		stepStatus: steps.Pending,
+		requester:  requesters.NewPaymentsGrpcRequester(),
 	}
 }
 
-func (s *step) Process() bool {
+func (s *step) Process() error {
 	err := s.requester.Process(&s.payment)
 	if err != nil {
 		s.stepStatus = steps.Failed
+		return err
 	}
 
 	switch s.payment.Status {
@@ -40,18 +39,14 @@ func (s *step) Process() bool {
 		s.stepStatus = steps.Complete
 	case Rejected:
 		s.stepStatus = steps.Failed
-		return false
+		return fmt.Errorf("payment step process failed")
 	}
 
-	return true
+	return nil
 }
 
-func (s *step) Revert() bool {
-	err := s.requester.Revert(&s.payment)
-	if err != nil {
-		return false
-	}
-	return true
+func (s *step) Revert() error {
+	return s.requester.Revert(&s.payment)
 }
 
 func (s *step) Status() steps.Status {
@@ -59,5 +54,5 @@ func (s *step) Status() steps.Status {
 }
 
 func (s *step) Name() string {
-	return "payments/grpc" // todo combine with fetcher
+	return fmt.Sprintf("payments/%s", s.requester.Name())
 }

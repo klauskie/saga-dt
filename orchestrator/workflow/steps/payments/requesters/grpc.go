@@ -15,12 +15,9 @@ func NewPaymentsGrpcRequester() Requester {
 }
 
 func (r grpcRequester) Process(payment *payments.Payment) error {
-	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
-	conn, err := grpc.Dial(":8089", opts...)
+	// Set up a connection to the server.
+	conn, err := retryDial()
 	if err != nil {
-		payment.Status = payments.None
 		return err
 	}
 	defer conn.Close()
@@ -40,12 +37,9 @@ func (r grpcRequester) Process(payment *payments.Payment) error {
 }
 
 func (r grpcRequester) Revert(payment *payments.Payment) error {
-	opts := []grpc.DialOption{
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	}
-	conn, err := grpc.Dial(":8089", opts...)
+	// Set up a connection to the server.
+	conn, err := retryDial()
 	if err != nil {
-		payment.Status = payments.None
 		return err
 	}
 	defer conn.Close()
@@ -64,6 +58,10 @@ func (r grpcRequester) Revert(payment *payments.Payment) error {
 	return err
 }
 
+func (r grpcRequester) Name() string {
+	return "grpc"
+}
+
 func convertFromGrpcStatus(grpcStatus proto.PaymentStatus) payments.PaymentStatus {
 	switch grpcStatus {
 	case proto.PaymentStatus_Approved:
@@ -72,4 +70,25 @@ func convertFromGrpcStatus(grpcStatus proto.PaymentStatus) payments.PaymentStatu
 		return payments.Rejected
 	}
 	return payments.None
+}
+
+// grpc settings
+var (
+	addr        = ":8089"
+	retryPolicy = `{
+		"methodConfig": [{
+		  "name": [{"service": "grpc.payments"}],
+		  "waitForReady": true,
+		  "retryPolicy": {
+			  "MaxAttempts": 3,
+			  "InitialBackoff": ".01s",
+			  "MaxBackoff": ".01s",
+			  "BackoffMultiplier": 1.0,
+			  "RetryableStatusCodes": [ "UNAVAILABLE" ]
+		  }
+		}]}`
+)
+
+func retryDial() (*grpc.ClientConn, error) {
+	return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithDefaultServiceConfig(retryPolicy))
 }

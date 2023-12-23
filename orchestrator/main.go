@@ -9,8 +9,8 @@ import (
 func main() {
 	fmt.Println("Orchestrator is up...")
 
-	workflow.Handle(models.Order{
-		Id:        "",
+	workflow.Handle(models.Task{
+		OrderId:   "",
 		UserId:    0,
 		ProductId: 0,
 		Amount:    0,

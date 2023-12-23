@@ -19,3 +19,7 @@ func (r httpRequester) Revert(payment *payments.Payment) error {
 	// TODO implement
 	panic("missing implementation")
 }
+
+func (r httpRequester) Name() string {
+	return "http"
+}

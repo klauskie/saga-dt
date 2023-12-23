@@ -1,14 +1,14 @@
 package workflow
 
 import (
-	"fmt"
 	"github.com/klauskie/saga-dt/orchestrator/models"
 	"github.com/klauskie/saga-dt/orchestrator/workflow/steps"
+	"github.com/klauskie/saga-dt/orchestrator/workflow/steps/inventory"
 	"github.com/klauskie/saga-dt/orchestrator/workflow/steps/payments"
 )
 
-func Handle(r models.Order) {
-	stepList := workflowSteps(r)
+func Handle(task models.Task) {
+	stepList := workflowSteps(task)
 
 	err := processSteps(stepList)
 	if err != nil {
@@ -18,9 +18,9 @@ func Handle(r models.Order) {
 
 func processSteps(stepList []steps.Step) error {
 	for _, step := range stepList {
-		ok := step.Process()
-		if !ok {
-			return fmt.Errorf("step %s failed", step.Name())
+		err := step.Process()
+		if err != nil {
+			return err
 		}
 	}
 
@@ -32,10 +32,13 @@ func revertSteps(stepList []steps.Step) {
 		if step.Status() == steps.Complete {
 			continue
 		}
-		step.Revert()
+		_ = step.Revert()
 	}
 }
 
-func workflowSteps(r models.Order) []steps.Step {
-	return []steps.Step{payments.NewStep(r)}
+func workflowSteps(task models.Task) []steps.Step {
+	return []steps.Step{
+		inventory.NewStep(task),
+		payments.NewStep(task),
+	}
 }

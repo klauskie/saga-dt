@@ -11,7 +11,7 @@ import (
 func main() {
 	fmt.Println("Inventory Service is up...")
 
-	lis, err := net.Listen("tcp", ":8089")
+	lis, err := net.Listen("tcp", ":8088")
 	if err != nil {
 		log.Fatalf("cannot initialize server: %v", err)
 	}

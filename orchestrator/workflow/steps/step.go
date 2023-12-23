@@ -2,8 +2,8 @@ package steps
 
 type Step interface {
 	Name() string
-	Process() bool
-	Revert() bool
+	Process() error
+	Revert() error
 	Status() Status
 }
 
