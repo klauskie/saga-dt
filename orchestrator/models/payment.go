@@ -1,4 +1,4 @@
-package payments
+package models
 
 type Payment struct {
 	UserId   int
@@ -11,7 +11,7 @@ type Payment struct {
 type PaymentStatus string
 
 const (
-	None     PaymentStatus = "none"
-	Approved PaymentStatus = "approved"
-	Rejected PaymentStatus = "rejected"
+	PaymentNone     PaymentStatus = "none"
+	PaymentApproved PaymentStatus = "approved"
+	PaymentRejected PaymentStatus = "rejected"
 )

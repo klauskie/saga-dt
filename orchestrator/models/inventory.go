@@ -1,4 +1,4 @@
-package inventory
+package models
 
 type Inventory struct {
 	OrderId    string

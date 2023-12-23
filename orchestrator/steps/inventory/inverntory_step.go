@@ -3,26 +3,26 @@ package inventory
 import (
 	"fmt"
 	"github.com/klauskie/saga-dt/orchestrator/models"
-	"github.com/klauskie/saga-dt/orchestrator/workflow/steps"
-	"github.com/klauskie/saga-dt/orchestrator/workflow/steps/inventory/requesters"
+	"github.com/klauskie/saga-dt/orchestrator/steps"
+	"github.com/klauskie/saga-dt/orchestrator/steps/inventory/requesters"
 )
 
 type step struct {
-	inventory  Inventory
+	inventory  models.Inventory
 	requester  requesters.Requester
 	stepStatus steps.Status
 }
 
 func NewStep(task models.Task) steps.Step {
 	return &step{
-		inventory: Inventory{
+		inventory: models.Inventory{
 			OrderId:    task.OrderId,
 			UserId:     task.UserId,
 			ProductId:  task.ProductId,
 			OutOfStock: false,
 		},
 		stepStatus: steps.Pending,
-		requester:  requesters.NewInventoryGrpcRequester(),
+		requester:  requesters.NewInventoryGrpcRequester("4042"),
 	}
 }
 

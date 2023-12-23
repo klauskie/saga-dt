@@ -3,20 +3,24 @@ package requesters
 import (
 	"context"
 	proto "github.com/klauskie/saga-dt/inventory/proto"
-	"github.com/klauskie/saga-dt/orchestrator/workflow/steps/inventory"
+	"github.com/klauskie/saga-dt/orchestrator/models"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-type grpcRequester struct{}
-
-func NewInventoryGrpcRequester() Requester {
-	return grpcRequester{}
+type grpcRequester struct {
+	port string
 }
 
-func (r grpcRequester) Process(inventory *inventory.Inventory) error {
+func NewInventoryGrpcRequester(port string) Requester {
+	return grpcRequester{
+		port: ":" + port,
+	}
+}
+
+func (r grpcRequester) Process(inventory *models.Inventory) error {
 	// Set up a connection to the server.
-	conn, err := retryDial()
+	conn, err := r.retryDial()
 	if err != nil {
 		return err
 	}
@@ -28,15 +32,18 @@ func (r grpcRequester) Process(inventory *inventory.Inventory) error {
 		OrderId:   inventory.OrderId,
 		ProductId: int64(inventory.ProductId),
 	})
+	if err != nil {
+		return err
+	}
 
 	inventory.OutOfStock = convertFromGrpcStatus(res.Status)
 
 	return err
 }
 
-func (r grpcRequester) Revert(inventory *inventory.Inventory) error {
+func (r grpcRequester) Revert(inventory *models.Inventory) error {
 	// Set up a connection to the server.
-	conn, err := retryDial()
+	conn, err := r.retryDial()
 	if err != nil {
 		return err
 	}
@@ -48,6 +55,9 @@ func (r grpcRequester) Revert(inventory *inventory.Inventory) error {
 		OrderId:   inventory.OrderId,
 		ProductId: int64(inventory.ProductId),
 	})
+	if err != nil {
+		return err
+	}
 
 	inventory.OutOfStock = convertFromGrpcStatus(res.Status)
 
@@ -70,7 +80,6 @@ func convertFromGrpcStatus(grpcStatus proto.InventoryStatus) (outOfStock bool) {
 
 // grpc settings
 var (
-	addr        = ":8088"
 	retryPolicy = `{
 		"methodConfig": [{
 		  "name": [{"service": "grpc.inventory"}],
@@ -85,6 +94,6 @@ var (
 		}]}`
 )
 
-func retryDial() (*grpc.ClientConn, error) {
-	return grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithDefaultServiceConfig(retryPolicy))
+func (r grpcRequester) retryDial() (*grpc.ClientConn, error) {
+	return grpc.Dial(r.port, grpc.WithTransportCredentials(insecure.NewCredentials()), grpc.WithDefaultServiceConfig(retryPolicy))
 }

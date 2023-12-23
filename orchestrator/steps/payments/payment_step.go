@@ -3,27 +3,27 @@ package payments
 import (
 	"fmt"
 	"github.com/klauskie/saga-dt/orchestrator/models"
-	"github.com/klauskie/saga-dt/orchestrator/workflow/steps"
-	"github.com/klauskie/saga-dt/orchestrator/workflow/steps/payments/requesters"
+	"github.com/klauskie/saga-dt/orchestrator/steps"
+	"github.com/klauskie/saga-dt/orchestrator/steps/payments/requesters"
 )
 
 type step struct {
-	payment    Payment
+	payment    models.Payment
 	requester  requesters.Requester
 	stepStatus steps.Status
 }
 
 func NewStep(task models.Task) steps.Step {
 	return &step{
-		payment: Payment{
+		payment: models.Payment{
 			UserId:   task.UserId,
 			OrderId:  task.OrderId,
 			Amount:   task.Amount,
 			Currency: "USD",
-			Status:   None,
+			Status:   models.PaymentNone,
 		},
 		stepStatus: steps.Pending,
-		requester:  requesters.NewPaymentsGrpcRequester(),
+		requester:  requesters.NewPaymentsGrpcRequester("4041"),
 	}
 }
 
@@ -35,9 +35,9 @@ func (s *step) Process() error {
 	}
 
 	switch s.payment.Status {
-	case Approved:
+	case models.PaymentApproved:
 		s.stepStatus = steps.Complete
-	case Rejected:
+	case models.PaymentRejected:
 		s.stepStatus = steps.Failed
 		return fmt.Errorf("payment step process failed")
 	}

@@ -10,9 +10,9 @@ func main() {
 	fmt.Println("Orchestrator is up...")
 
 	workflow.Handle(models.Task{
-		OrderId:   "",
-		UserId:    0,
-		ProductId: 0,
-		Amount:    0,
+		OrderId:   "123",
+		UserId:    987,
+		ProductId: 2,
+		Amount:    20.99,
 	})
 }

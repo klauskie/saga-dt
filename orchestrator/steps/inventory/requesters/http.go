@@ -1,21 +1,21 @@
 package requesters
 
 import (
-	"github.com/klauskie/saga-dt/orchestrator/workflow/steps/payments"
+	"github.com/klauskie/saga-dt/orchestrator/models"
 )
 
 type httpRequester struct{}
 
-func NewPaymentsHttpRequester() Requester {
+func NewInventoryHttpRequester() Requester {
 	return httpRequester{}
 }
 
-func (r httpRequester) Process(payment *payments.Payment) error {
+func (r httpRequester) Process(inventory *models.Inventory) error {
 	// TODO implement
 	panic("missing implementation")
 }
 
-func (r httpRequester) Revert(payment *payments.Payment) error {
+func (r httpRequester) Revert(inventory *models.Inventory) error {
 	// TODO implement
 	panic("missing implementation")
 }
