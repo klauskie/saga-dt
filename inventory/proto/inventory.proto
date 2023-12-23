@@ -1,0 +1,25 @@
+syntax = "proto3";
+option go_package = "github.com/klauskie/saga-dt/inventory/proto";
+
+message InventoryRequest {
+  int64 userId = 1;
+  string orderId = 2;
+  int64 productId = 3;
+}
+
+message InventoryResponse {
+  int64 userId = 1;
+  string orderId = 2;
+  int64 productId = 3;
+  InventoryStatus status = 4;
+}
+
+enum InventoryStatus {
+  Available = 0;
+  Unavailable = 1;
+}
+
+service Inventory {
+  rpc Deduct(InventoryRequest) returns (InventoryResponse);
+  rpc Add(InventoryRequest) returns (InventoryResponse);
+}
